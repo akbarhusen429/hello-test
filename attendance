@@ -1,0 +1,79 @@
+$flag = 1;
+$lunch_start = 0;
+$lunch_end = 0;
+$day_end = 0;
+if (mysqli_num_rows($result_today_date) == 0) {
+    $flag = 0;
+    $lunch_start = 0;
+    $lunch_end = 0;
+    $day_end = 0;
+}
+if (strlen($raw_today_date['day_start']) > 0) {
+    $flag = 1;
+    $lunch_start = 1;
+    $lunch_end = 0;
+    $day_end = 0;
+}
+if (strlen($raw_today_date['lunch_start']) > 0) {
+    $flag = 1;
+    $lunch_start = 0;
+    $lunch_end = 1;
+    $day_end = 0;
+}
+
+
+
+
+if (mysqli_num_rows($result_today_date) == 0) {
+    if (isset($_REQUEST['day_start'])) {
+        $day_start = date("h:i:s");
+        mysqli_query($con, "insert into attendance(user_id,day,day_start) value($user_id,'$day','$day_start')") or die(mysqli_error($con));
+
+        header('location:attendance.php');
+    }
+} else {
+    if (isset($_REQUEST['lunch_start'])) {
+        $lunch_start = date("h:i:s");
+        mysqli_query($con, "update attendance set lunch_start='$lunch_start' where id=$id") or die(mysqli_error($con));
+        $flag = 2;
+        header('location:attendance.php');
+    }
+    
+    
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Attendance system</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    </head>
+    <body>
+        <h1>Attendance system</h1>
+        <form method="post">
+            <?php
+            //$day_start1 = stristr($raw_today_date['day_start'], " ", TRUE);
+            ?>
+            <button type="submit" name="day_start" <?php
+            if ($flag == 1) {
+                echo 'disabled="disabled"';
+            }
+            ?> class="btn btn-primary">Day start!</button>
+        </form>
+        <br>
+        <form method="post">
+            <?php
+            //$lunch_start1 = stristr($raw_today_date['lunch_start'], " ", TRUE);
+            ?>
+            <button type="submit" name="lunch_start" <?php
+            if ($lunch_start == 0) {
+                echo 'disabled="disabled"';
+            }
+            ?> class="btn btn-primary">Lunch start!</button>
+        </form>
+        </body>
+        </html>
